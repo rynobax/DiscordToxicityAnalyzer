@@ -4,9 +4,13 @@ import {
   Stepper,
   StepButton
 } from 'material-ui/Stepper';
-import BotInfo from './BotInfo/BotInfo';
 import Paper from 'material-ui/Paper';
 import Discord from 'discord.js';
+
+import BotInfo from './BotInfo/BotInfo';
+import TextChannel from './TextChannel/TextChannel';
+import Analyze from './Analyze/Analyze';
+
 const client = new Discord.Client();
 
 class App extends Component {
@@ -15,14 +19,15 @@ class App extends Component {
     this.state = {
       stepIndex: 0,
       completedStepIndex: 0,
-      token: ''
+      token: 'MzUzMzU5Mjk5NjQ2NTg2ODkz.DJLevA.6BmbYhF-4F1MbdVmWXQ5sCb2PAI',
+      channel: ''
     };
     
     this.handleNext = () => {
       const {stepIndex} = this.state;
       this.setState({
         stepIndex: stepIndex + 1,
-        completedStepIndex: stepIndex
+        completedStepIndex: stepIndex + 1
       });
     };
     
@@ -33,7 +38,14 @@ class App extends Component {
       }
     };
 
-    this.onTokenInputChange = ((_, token) => this.setState({token}));
+    this.onTokenInputChange = (_, token) => {
+      client.destroy();
+      this.setState({token, completedStepIndex: 0, channel: ''});
+    };
+    
+    this.onChannelInputChange = (event, index, value) => {
+      this.setState({channel: value, completedStepIndex: 1});
+    };
     
     this.getStepContent = (stepIndex) => {
       switch (stepIndex) {
@@ -45,9 +57,16 @@ class App extends Component {
                     onInputChange={this.onTokenInputChange}
                   />;
         case 1:
-          return '2';
+          return <TextChannel
+                    handleNext={this.handleNext}
+                    client={client}
+                    onChannelInputChange={this.onChannelInputChange}
+                    channelValue={this.state.channel}
+                  />;
         case 2:
-          return '3';
+          return <Analyze
+                    channel={client.channels.get(this.state.channel)}
+                  />;
         default:
           return 'Default';
       }

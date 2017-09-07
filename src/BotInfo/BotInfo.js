@@ -15,7 +15,6 @@ class BotInfo extends Component {
     const handleError = ({message}) => { this.setState({error: message}) };
     this.testToken = () => {
       const { token } = this.props;
-      console.log('token: ', token);
       if(!token) return;
       this.setState({error: '', testing: true});
       client.login(token)
@@ -44,7 +43,7 @@ class BotInfo extends Component {
             value={token}
           />
           <RaisedButton
-            label="Enter"
+            label="Continue"
             primary
             style={{marginLeft: 10}}
             onClick={testToken}
